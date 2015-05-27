@@ -841,21 +841,16 @@ class Query extends Component implements QueryInterface
      *
      * Note that when the value is empty, no comparison expression will be added to the search condition.
      *
-     * @param string $name column name
-     * @param scalar $value column value
-     * @param string $defaultOperator Defaults to =, performing an exact match.
-     * For example: use 'like' for partial matching
+     * @param string $column name of column
+     * @param mixed $value value that will be checked
+     * @param string $operator Defaults to =, performing an exact match. For example: use 'like' for partial matching
      * @return static The query object itself
      */
-    public function andFilterCompare($name, $value, $defaultOperator = '=')
+    public function andFilterCompare($column, $value, $operator = '=')
     {
-        $matches=[];
-        if (preg_match("/^(<>|>=|>|<=|<|=)/", $value, $matches)) {
-            $op = $matches[1];
-            $value = substr($value, strlen($op));
-        } else {
-            $op = $defaultOperator;
+        if (preg_match("/^(?<operator><>|>=|>|<=|<|=)(?<value>.*)/", $value, $matches)) {
+            extract($matches);
         }
-        return $this->andFilterWhere([$op, $name, $value]);
+        return $this->andFilterWhere([$operator, $column, $value]);
     }
 }
